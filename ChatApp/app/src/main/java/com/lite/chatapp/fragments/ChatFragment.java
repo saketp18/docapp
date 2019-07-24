@@ -28,7 +28,6 @@ import com.lite.chatapp.models.MessageBot;
 import com.lite.chatapp.models.MessageDB;
 import com.lite.chatapp.models.MessageUI;
 import com.lite.chatapp.presenter.GetMessage;
-import com.lite.chatapp.presenter.Interactor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +41,7 @@ import retrofit2.Response;
 /**
  * Created by Saket on 24,July,2019
  */
-public class ChatFragment extends Fragment implements Interactor.DBUpdateListener {
+public class ChatFragment extends Fragment {
 
     private List<MessageUI> messages;
     private Button mSendButton;
@@ -66,13 +65,11 @@ public class ChatFragment extends Fragment implements Interactor.DBUpdateListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((MainActivity) getActivity()).unregisterDataUpdateListener(this);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ((MainActivity) context).registerDataUpdateListener(this);
     }
 
     @Override
@@ -118,7 +115,7 @@ public class ChatFragment extends Fragment implements Interactor.DBUpdateListene
         if(user == null)
             return;
         MessageRepo messageRepo = new MessageRepo(getContext());
-        messageRepo.getMessage(user,"Self").observeForever(new Observer<List<MessageDB>>() {
+        messageRepo.getMessage(user,"Self").observe(((MainActivity)getActivity()),new Observer<List<MessageDB>>() {
             @Override
             public void onChanged(@Nullable List<MessageDB> messageDBS) {
                 Log.d("Saket",messageDBS.toString());
@@ -138,7 +135,6 @@ public class ChatFragment extends Fragment implements Interactor.DBUpdateListene
         mMessageAdapter.add(messageUI);
         mMessageAdapter.notifyDataSetChanged();
         mMessageList.scrollToPosition(mMessageAdapter.getItemCount() - 1);
-        ((MainActivity)getActivity()).dataUpdated();
     }
 
     public void callChatBot(String message) {
@@ -158,20 +154,12 @@ public class ChatFragment extends Fragment implements Interactor.DBUpdateListene
                     mMessageAdapter.add(messageUI);
                     mMessageAdapter.notifyDataSetChanged();
                     mMessageList.scrollToPosition(mMessageAdapter.getItemCount() - 1);
-                    ((MainActivity)getActivity()).dataUpdated();
                 }
             }
-
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
                 t.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void onDataUpdate() {
-    //        getAllMessages();
-
     }
 }

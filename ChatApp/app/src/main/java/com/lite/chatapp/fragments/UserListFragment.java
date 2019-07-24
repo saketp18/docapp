@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.lite.chatapp.MainActivity;
 import com.lite.chatapp.R;
 import com.lite.chatapp.adapter.UserListAdapter;
 import com.lite.chatapp.db.MessageRepo;
@@ -27,7 +25,7 @@ import java.util.List;
 /**
  * Created by Saket on 24,July,2019
  */
-public class UserListFragment extends Fragment implements Interactor.UserFragList, Interactor.DBUpdateListener {
+public class UserListFragment extends Fragment{
 
     private UserListAdapter mUserListAdapter;
     private ListView mUserListView;
@@ -43,13 +41,11 @@ public class UserListFragment extends Fragment implements Interactor.UserFragLis
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ((MainActivity) getActivity()).unregisterDataUpdateListener(this);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        ((MainActivity) context).registerDataUpdateListener(this);
         if(context instanceof Interactor.SendUserList){      // context instanceof YourActivity
             this.mSendUserList = (Interactor.SendUserList) context; // = (YourActivity) context
         } else {
@@ -62,7 +58,7 @@ public class UserListFragment extends Fragment implements Interactor.UserFragLis
         super.onCreate(savedInstanceState);
         usersList = new ArrayList<>();
         getAllUsers();
-        mUserListAdapter = new UserListAdapter(usersList, this);
+        mUserListAdapter = new UserListAdapter(usersList);
     }
 
     @Nullable
@@ -75,8 +71,8 @@ public class UserListFragment extends Fragment implements Interactor.UserFragLis
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mUserListView = (ListView)view.findViewById(R.id.userlist);
         mButton = (Button)view.findViewById(R.id.newbutton);
-        mUserListAdapter = new UserListAdapter(usersList, this);
         mUserListView.setAdapter(mUserListAdapter);
+        mUserListAdapter.notifyDataSetChanged();
         mUserListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -91,11 +87,6 @@ public class UserListFragment extends Fragment implements Interactor.UserFragLis
         });
     }
 
-    @Override
-    public void getUser(String user) {
-        mSendUserList.sendUser(user);
-    }
-
     private void getAllUsers(){
         MessageRepo messageRepo = new MessageRepo(getContext());
         messageRepo.getUsers("Self").observeForever(new Observer<List<String>>() {
@@ -104,13 +95,8 @@ public class UserListFragment extends Fragment implements Interactor.UserFragLis
                 for(String user : users){
                     usersList.add(user);
                 }
-                Log.d("Saket", users.toString());
             }
         });
     }
 
-    @Override
-    public void onDataUpdate() {
-        //        getAllUsers();
-    }
 }

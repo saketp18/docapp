@@ -38,7 +38,6 @@ public class MessageRepo {
             @Override
             protected Void doInBackground(Void... voids) {
                 messageDataBase.daoAccess().insertMessage(messageDB);
-                Log.d("Saket", messageDB.toString());
                 return null;
             }
         }.execute();

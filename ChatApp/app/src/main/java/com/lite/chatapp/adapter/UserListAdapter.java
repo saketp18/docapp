@@ -18,11 +18,9 @@ import java.util.List;
 public class UserListAdapter extends BaseAdapter {
 
     private List<String> userList;
-    private Interactor.UserFragList mUserFragList;
 
-    public UserListAdapter(List<String> userList, Interactor.UserFragList userFragList) {
+    public UserListAdapter(List<String> userList) {
         this.userList = userList;
-        this.mUserFragList = userFragList;
     }
 
     @Override
@@ -42,7 +40,6 @@ public class UserListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertview, ViewGroup viewGroup) {
-        Log.d("Saket", "hello there");
         LayoutInflater layoutInflater = null;
         if(convertview == null) {
             layoutInflater = LayoutInflater.from(viewGroup.getContext());
