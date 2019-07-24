@@ -9,19 +9,19 @@ public class Message {
     @SerializedName("errorMessage")
     private String errorMessage;
     @SerializedName("message")
-    private BotMessage message;
+    private MessageBot message;
 
-    public Message(String mSuccess, String mExternalId, BotMessage message) {
+    public Message(String mSuccess, String mExternalId, MessageBot message) {
         this.success = mSuccess;
         this.errorMessage = mExternalId;
         this.message = message;
     }
 
-    public BotMessage getMessage() {
+    public MessageBot getMessage() {
         return message;
     }
 
-    public void setMessage(BotMessage message) {
+    public void setMessage(MessageBot message) {
         this.message = message;
     }
 

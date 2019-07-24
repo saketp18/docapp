@@ -1,6 +1,9 @@
 package com.lite.chatapp;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,53 +13,43 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.lite.chatapp.adapter.MessageAdapter;
+import com.lite.chatapp.fragments.ChatFragment;
+import com.lite.chatapp.fragments.UserListFragment;
+import com.lite.chatapp.models.Message;
+import com.lite.chatapp.models.MessageBot;
 import com.lite.chatapp.presenter.Interactor;
 import com.lite.chatapp.presenter.MainActivityPresenter;
 import com.lite.chatapp.core.Utils;
-import com.lite.chatapp.models.UIMessage;
+import com.lite.chatapp.models.MessageUI;
 
-public class MainActivity extends AppCompatActivity implements Interactor.ChatResponse {
+import java.util.ArrayList;
+import java.util.List;
 
-    private Button mSendButton;
-    private EditText mMessageText;
-    private RecyclerView mMessageList;
-    private MessageAdapter mMessageAdapter;
+/**
+ * Created by Saket on 24,July,2019
+ */
+
+public class MainActivity extends AppCompatActivity implements Interactor.ChatResponse, LifecycleOwner, Interactor.SendUserList {
+
+
     private MainActivityPresenter mMainActivityPresenter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            if (view.getId() == R.id.sendButton) {
-                mMainActivityPresenter.callChatBot(mMessageText.getText().toString());
-                onSuccessData(mMessageText.getText().toString(), Utils.SENDER.SELF.ordinal());
-                mMessageText.getText().clear();
-            }
-        }
-    };
+    private List<Interactor.DBUpdateListener> mListeners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mListeners = new ArrayList<>();
         mMainActivityPresenter = new MainActivityPresenter(this);
-        mSendButton = findViewById(R.id.sendButton);
-        mMessageText = findViewById(R.id.message);
-        mMessageList = findViewById(R.id.messagelist);
-        mSendButton.setOnClickListener(mClickListener);
-        mLayoutManager = new LinearLayoutManager(this);
-        mMessageList.setLayoutManager(mLayoutManager);
-        mMessageAdapter = new MessageAdapter();
-        mMessageList.setAdapter(mMessageAdapter);
-
-
+        UserListFragment firstFragment = new UserListFragment();
+        getSupportFragmentManager().beginTransaction()
+        .add(R.id.container, firstFragment)
+        .commit();
     }
 
     @Override
-    public void onSuccessData(String message, int type) {
-        UIMessage uiMessage = new UIMessage(message, type);
-        mMessageAdapter.add(uiMessage);
-        mMessageAdapter.notifyDataSetChanged();
-        mMessageList.scrollToPosition(mMessageAdapter.getItemCount() - 1);
+    public void onSuccessData(MessageBot message, int type) {
+
     }
 
     @Override
@@ -64,4 +57,30 @@ public class MainActivity extends AppCompatActivity implements Interactor.ChatRe
         Toast.makeText(this, "Please try again...", Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void sendUser(String user) {
+        ChatFragment chatFragment = new ChatFragment();
+        Bundle args = new Bundle();
+        args.putString("user", user);
+        chatFragment.setArguments(args);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, chatFragment) // replace flContainer
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public synchronized void registerDataUpdateListener(Interactor.DBUpdateListener listener) {
+        mListeners.add(listener);
+    }
+
+    public synchronized void unregisterDataUpdateListener(Interactor.DBUpdateListener listener) {
+        mListeners.remove(listener);
+    }
+
+    public synchronized void dataUpdated() {
+        for (Interactor.DBUpdateListener listener : mListeners) {
+            listener.onDataUpdate();
+        }
+    }
 }

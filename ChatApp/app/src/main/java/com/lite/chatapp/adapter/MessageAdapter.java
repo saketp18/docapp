@@ -1,5 +1,6 @@
 package com.lite.chatapp.adapter;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,18 +10,20 @@ import android.widget.TextView;
 
 import com.lite.chatapp.R;
 import com.lite.chatapp.core.Utils;
-import com.lite.chatapp.models.UIMessage;
+import com.lite.chatapp.db.MessageRepo;
+import com.lite.chatapp.models.MessageUI;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageHolder> {
 
-    private List<UIMessage> messages;
+    private List<MessageUI> messages;
+    private Context mContext;
 
-    public MessageAdapter() {
+    public MessageAdapter(Context context, List<MessageUI> messages) {
         super();
-        messages = new ArrayList<>();
+        this.messages = messages;
+        mContext = context;
     }
 
     @NonNull
@@ -38,11 +41,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             holder.message.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
         } else
             holder.message.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-        holder.message.setText(messages.get(position).getmMessage());
-    }
-
-    public void add(UIMessage m) {
-        messages.add(m);
+        holder.message.setText(messages.get(position).getmMessage().getChatBotMessage());
     }
 
     @Override
@@ -57,5 +56,18 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageH
             super(itemView);
             this.message = itemView.findViewById(R.id.messageitem);
         }
+    }
+
+    public void add(MessageUI m) {
+        messages.add(m);
+        addMessageDB(m);
+    }
+
+    public void addMessageDB(MessageUI m) {
+        MessageRepo messageRepo = new MessageRepo(mContext);
+        String message = m.getmMessage().getChatBotMessage();
+        String chatbotId = m.getmMessage().getChatBotId();
+        String chatbotname = m.getmMessage().getChatBotName();
+        messageRepo.insetMessage(chatbotId, message, m.getType(), chatbotname);
     }
 }

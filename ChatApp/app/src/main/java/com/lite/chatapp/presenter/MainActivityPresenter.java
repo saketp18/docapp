@@ -12,6 +12,9 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+/**
+ * Created by Saket on 24,July,2019
+ */
 
 public class MainActivityPresenter {
 
@@ -38,7 +41,7 @@ public class MainActivityPresenter {
             @Override
             public void onResponse(Call<Message> call, Response<Message> response) {
                 if (response != null) {
-                    mInteractor.onSuccessData(response.body().getMessage().getChatBotMessage(), Utils.SENDER.BOT.ordinal());
+                    mInteractor.onSuccessData(response.body().getMessage(), Utils.SENDER.BOT.ordinal());
                 }
             }
 

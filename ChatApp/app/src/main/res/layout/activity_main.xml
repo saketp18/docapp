@@ -6,34 +6,10 @@
     android:padding="@dimen/padding_container"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/message_send"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/background_light"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="4">
+        android:layout_height="match_parent"/>
 
-        <EditText
-            android:id="@+id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:lines="1" />
 
-        <Button
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/send_button" />
-    </LinearLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messagelist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/message_send" />
 </RelativeLayout>

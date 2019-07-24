@@ -2,7 +2,7 @@ package com.lite.chatapp.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class BotMessage {
+public class MessageBot {
 
     @SerializedName("chatBotName")
     private String chatBotName;
@@ -12,6 +12,13 @@ public class BotMessage {
     private String message;
     @SerializedName("emotion")
     private String emotion;
+
+    public MessageBot(String chatBotName, String chatBotId, String message, String emotion) {
+        this.chatBotName = chatBotName;
+        this.chatBotId = chatBotId;
+        this.message = message;
+        this.emotion = emotion;
+    }
 
     public String getChatBotId() {
         return chatBotId;

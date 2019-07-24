@@ -1,20 +1,20 @@
 package com.lite.chatapp.models;
 
-public class UIMessage {
+public class MessageUI {
 
-    private String mMessage;
+    private MessageBot mMessage;
     private int type;
 
-    public UIMessage(String mMessage, int type) {
+    public MessageUI(MessageBot mMessage, int type) {
         this.mMessage = mMessage;
         this.type = type;
     }
 
-    public String getmMessage() {
+    public MessageBot getmMessage() {
         return mMessage;
     }
 
-    public void setmMessage(String mMessage) {
+    public void setmMessage(MessageBot mMessage) {
         this.mMessage = mMessage;
     }
 
